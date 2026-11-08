@@ -1,6 +1,6 @@
 # Source control
 
-T3 Code integrates with GitHub, GitLab, Forgejo, Gitea, Bitbucket, Azure DevOps, and GitCafe to clone
+T3 Code integrates with GitHub, GitLab, Forgejo, Gitea, Bitbucket, Azure DevOps, GitCafe, and Codeup to clone
 and publish repositories, create pull requests, and review changes.
 
 ## Review turn changes
@@ -128,6 +128,29 @@ sent to `git.cafe`; `CAFE_TOKEN` follows `CAFE_HOST` if you set it. Repositories
 
 Line comments are not available for GitCafe pull requests yet.
 Merging a stack lands it through GitCafe, and updating a branch restacks the layers above it.
+
+### Codeup
+
+Open **Settings → Source control**, expand **Codeup**, and enter:
+
+- **Personal access token**: a Yunxiao token (`pt-…`), sent as `x-yunxiao-token`
+- **Organization ID**: required for central edition (`codeup.aliyun.com`)
+- **API base URL**: central edition uses `https://openapi-rdc.aliyuncs.com`; Region edition uses the instance OpenAPI domain
+- **Web host**: central edition uses `codeup.aliyun.com`; Region edition uses the git host from clone URLs
+
+A field saves when you leave it. The saved token is used before these environment variables on the
+server (restart after changing them):
+
+```bash
+export ALIBABA_CLOUD_YUNXIAO_ACCESS_TOKEN="pt-…"
+export ALIBABA_CLOUD_YUNXIAO_ORGANIZATION_ID="your-organization-id"
+# Region edition only:
+# export ALIBABA_CLOUD_YUNXIAO_API_BASE_URL="https://your-instance-openapi-host"
+# export ALIBABA_CLOUD_YUNXIAO_WEB_HOST="your.git.host"
+```
+
+Git clone and push still need the machine's HTTPS or SSH credentials for that host. After changing
+the web host, choose **Rescan** so remotes on that host are recognized.
 
 ## Start, clone, or publish a project
 

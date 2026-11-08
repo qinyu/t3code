@@ -1,7 +1,10 @@
 import type { EnvironmentId } from "@t3tools/contracts";
-import type { SourceControlDefinition } from "@t3tools/client-runtime/source-control-clients";
+import {
+  syncRegisteredSourceControlHosts,
+  type SourceControlDefinition,
+} from "@t3tools/client-runtime/source-control-clients";
 import * as Equal from "effect/Equal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useEnvironmentSettings } from "../../hooks/useSettings";
 import { serverEnvironment } from "../../state/server";
@@ -20,10 +23,12 @@ export function SourceControlHostSettings({
   };
   readonly onSaved: () => void;
 }) {
-  const saved = useEnvironmentSettings(
-    environmentId,
-    (settings) => settings.sourceControlHosts[definition.kind],
-  );
+  const hosts = useEnvironmentSettings(environmentId, (settings) => settings.sourceControlHosts);
+  const saved = hosts[definition.kind];
+  // oxlint-disable-next-line t3code/no-unreasoned-state-sync -- Keeps the module-level Codeup host table in step with Settings so client remote recognition matches the server.
+  useEffect(() => {
+    syncRegisteredSourceControlHosts({ sourceControlHosts: hosts });
+  }, [hosts]);
   const updateSettings = useAtomCommand(serverEnvironment.updateSettings, {
     label: `save ${definition.label} settings`,
   });

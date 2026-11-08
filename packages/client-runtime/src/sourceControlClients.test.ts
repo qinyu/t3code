@@ -38,6 +38,16 @@ describe("sourceControlClients.parseChangeRequestUrl", () => {
     });
   });
 
+  it("reads a Codeup merge request under nested groups", () => {
+    const url = "https://codeup.aliyun.com/qimao/public/sdk/message/change/55";
+    expect(parse(url)).toEqual({
+      host: "codeup.aliyun.com",
+      repository: "qimao/public/sdk/message",
+      number: 55,
+    });
+    expect(kindOf(url)).toBe("codeup");
+  });
+
   it("reads Forgejo URLs even when the hostname contains github", () => {
     expect(parse("https://github.internal/team/repo/pulls/7")).toEqual({
       host: "github.internal",
@@ -254,6 +264,8 @@ describe("sourceControlClients.recognizeRemote", () => {
     expect(kindOfRemote("https://bitbucket.gitlab.example/o/r")).toBe("gitlab");
     expect(kindOfRemote("https://bitbucket.visualstudio.com/p/_git/r")).toBe("azure-devops");
     expect(kindOfRemote("git@git.cafe:pingdotgg/t3code.git")).toBe("gitcafe");
+    expect(kindOfRemote("https://codeup.aliyun.com/org/repo.git")).toBe("codeup");
+    expect(kindOfRemote("git@codeup.aliyun.com:org/group/repo.git")).toBe("codeup");
   });
 
   it("reads a remote no host claims as an unknown host, and a local path as no host", () => {

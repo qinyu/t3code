@@ -1,4 +1,7 @@
-import { builtInSourceControlDefinitions } from "@t3tools/source-control-definitions/registry";
+import {
+  applyCodeupSettings,
+  builtInSourceControlDefinitions,
+} from "@t3tools/source-control-definitions/registry";
 import {
   HostCredentialSettings,
   readSourceControlHostSettings,
@@ -31,6 +34,20 @@ export function readHostCredentialSettings(
   kind: string,
 ): HostCredentialSettings {
   return readSourceControlHostSettings(HostCredentialSettings, settings.sourceControlHosts[kind]);
+}
+
+/**
+ * Registers Codeup Region web hosts from Settings so client-side remote recognition matches the
+ * server. Call when environment settings arrive or change; Rescan is still needed for discovery.
+ */
+export function syncRegisteredSourceControlHosts(
+  settings: Pick<ServerSettings, "sourceControlHosts">,
+): void {
+  const codeup = sourceControlClients.find("codeup");
+  if (codeup?.settings === undefined) return;
+  applyCodeupSettings(
+    readSourceControlHostSettings(codeup.settings, settings.sourceControlHosts.codeup),
+  );
 }
 
 /** A host's change request term where it opens a sentence: "Merge request merged". */
